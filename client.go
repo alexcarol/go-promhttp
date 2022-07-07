@@ -127,9 +127,11 @@ func instrumentClientWithConstLabels(namespace string, c *http.Client, reg prome
 		Transport: pph.InstrumentRoundTripperInFlight(i.inflight,
 			pph.InstrumentRoundTripperCounter(i.requests,
 				pph.InstrumentRoundTripperTrace(trace,
-					instrumentRoundTripperRequestSize(i.requestSize, instrumentRoundTripperResponseContentLength(i.responseContentLength,
-						pph.InstrumentRoundTripperDuration(i.duration, transport),
-					)),
+					instrumentRoundTripperRequestSize(i.requestSize,
+						instrumentRoundTripperResponseContentLength(i.responseContentLength,
+							pph.InstrumentRoundTripperDuration(i.duration, transport),
+						),
+					),
 				),
 			),
 		),
@@ -218,4 +220,6 @@ func (i *outgoingInstrumentation) Collect(in chan<- prometheus.Metric) {
 	i.dnsDuration.Collect(in)
 	i.tlsDuration.Collect(in)
 	i.inflight.Collect(in)
+	i.requestSize.Collect(in)
+	i.responseContentLength.Collect(in)
 }
